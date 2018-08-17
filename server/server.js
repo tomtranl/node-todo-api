@@ -4,6 +4,7 @@ let bodyParser = require('body-parser');
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todos');
 let {User} = require('./models/user');
+let {ObjectID} = require('mongodb');
 
 let app = express();
 
@@ -33,6 +34,40 @@ app.get('/todos', (req, res) =>
     {
         res.status(400).send(e);
     })
+});
+
+// GET /todos/1234324
+app.get('/todos/:id', (req, res) =>
+{
+    let id = req.params.id;
+
+    // Validate id using isValid
+        // 404 - send back empty send
+        if (!ObjectID.isValid(id))
+        {
+            return res.status(404).send();
+        }
+        Todo.findById(id).then((todo) =>
+        {
+            if (!todo)
+            {
+                return res.status(404).send();
+            }
+                res.send({todo});
+        }).catch((e) =>
+        {
+            res.status(400).send();
+        })
+
+
+
+    // findById
+        // success
+            // if todo - send it back
+            // if no todo - send back 404 with empty body
+        // error
+            // 400 - and send empty body back
+    
 });
 
 app.listen(3000, () =>
