@@ -41,7 +41,6 @@ let UserSchema = new mongoose.Schema
             }
         }
     ]
-
 });
 
 UserSchema.methods.toJSON = function () 
@@ -62,6 +61,18 @@ UserSchema.methods.generateAuthToken = function ()
     return user.save().then(() =>
     {
         return token;
+    });
+};
+
+UserSchema.methods.removeToken = function (token)
+{
+    let user = this;
+
+    return user.update({
+        $pull:
+        {
+            tokens: {token}
+        }
     });
 };
 
